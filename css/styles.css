@@ -423,10 +423,15 @@ html:not(.js) .back-to-shelves { display: none; }
 
 .since { padding: 4rem 0 4.5rem; background: var(--wall); }
 .section-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; max-width: none; }
-.section-head .scroll-hint {
-  display: inline-flex; align-items: center; gap: 0.4rem; margin: 0;
-  font: 700 0.68rem var(--sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2);
+.rule-controls { display: flex; gap: 0.5rem; }
+.rule-btn {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border: 1.5px solid var(--ink); border-radius: 2px; background: transparent; color: var(--ink); cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, opacity 0.15s;
 }
+@media (hover: hover) { .rule-btn:hover:not(:disabled) { background: var(--ink); color: #fff; } }
+.rule-btn:disabled { opacity: 0.3; cursor: default; }
+.icon-flip { transform: scaleX(-1); }
 .since { --tl-pad: var(--gutter); }
 @media (min-width: 1240px) { .since { --tl-pad: calc((100% - 1240px) / 2 + var(--gutter)); } }
 .rule-scroll {
@@ -437,6 +442,10 @@ html:not(.js) .back-to-shelves { display: none; }
   scrollbar-width: thin;
 }
 .rule-scroll:focus-visible { outline-offset: -3px; }
+@media (hover: hover) and (pointer: fine) {
+  .rule-scroll { cursor: grab; }
+  .rule-scroll.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+}
 .timeline {
   display: grid; grid-auto-flow: column; grid-auto-columns: min(80vw, 300px);
   padding-inline: var(--tl-pad);

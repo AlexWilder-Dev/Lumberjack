@@ -128,6 +128,71 @@
     select(tabs[0]);
   }
 
+  /* ---------- Since 2016: the folding rule ---------- */
+
+  const rule = document.querySelector('[data-rule]');
+  const ruleControls = document.querySelector('[data-rule-controls]');
+  if (rule && ruleControls) {
+    const items = Array.from(rule.querySelectorAll('.timeline > li'));
+    const prev = ruleControls.querySelector('[data-rule-prev]');
+    const next = ruleControls.querySelector('[data-rule-next]');
+    const smooth = window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'smooth' : 'auto';
+    const pad = () => parseFloat(getComputedStyle(rule).scrollPaddingLeft) || 0;
+    const maxScroll = () => rule.scrollWidth - rule.clientWidth;
+
+    // index of the entry currently sitting at the start of the rule
+    function current() {
+      const left = rule.scrollLeft + pad();
+      let best = 0;
+      items.forEach((li, i) => { if (Math.abs(li.offsetLeft - left) < Math.abs(items[best].offsetLeft - left)) best = i; });
+      return best;
+    }
+    function goTo(i) {
+      const target = Math.max(0, Math.min(items.length - 1, i));
+      rule.scrollTo({ left: Math.min(items[target].offsetLeft - pad(), maxScroll()), behavior: smooth });
+    }
+    function updateButtons() {
+      prev.disabled = rule.scrollLeft <= 2;
+      next.disabled = rule.scrollLeft >= maxScroll() - 2;
+      ruleControls.hidden = maxScroll() <= 2;
+    }
+    prev.addEventListener('click', () => goTo(current() - 1));
+    next.addEventListener('click', () => goTo(current() + 1));
+    rule.addEventListener('scroll', updateButtons, { passive: true });
+    window.addEventListener('resize', updateButtons);
+    updateButtons();
+
+    // click-and-drag with a mouse (touch and trackpads scroll natively)
+    let drag = null;
+    rule.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      drag = { x: e.clientX, left: rule.scrollLeft, moved: false, id: e.pointerId };
+    });
+    rule.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!drag.moved && Math.abs(dx) > 4) {
+        drag.moved = true;
+        rule.classList.add('is-dragging');
+        rule.setPointerCapture(drag.id);
+      }
+      if (drag.moved) rule.scrollLeft = drag.left - dx;
+    });
+    const endDrag = () => {
+      if (!drag) return;
+      const moved = drag.moved;
+      drag = null;
+      if (!moved) return;
+      rule.classList.remove('is-dragging');
+      goTo(current());
+      // swallow the click that follows a drag
+      rule.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); }, { capture: true, once: true });
+    };
+    rule.addEventListener('pointerup', endDrag);
+    rule.addEventListener('pointercancel', endDrag);
+    rule.addEventListener('dragstart', (e) => e.preventDefault());
+  }
+
   /* ---------- Contact form (front end only) ---------- */
 
   const form = document.querySelector('[data-contact-form]');
