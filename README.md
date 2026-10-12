@@ -48,7 +48,9 @@ Adding `#me` to the URL once marks your browser so the demo ping below ignores y
 
 ## Deploy to GitHub Pages
 
-There's no build step. In the repo settings, go to **Pages** and set **Deploy from a branch**, pick the branch and `/ (root)`, then save. All paths are relative, so the site works at `https://<user>.github.io/<repo>/`. The empty `.nojekyll` file stops Jekyll from processing the site.
+Live at https://alexwilder-dev.github.io/Lumberjack/
+
+Pages is set to deploy from **GitHub Actions**. `.github/workflows/pages.yml` publishes `index.html`, `css/`, `js/` and `images/` on every push to `main` or `claude/tender-bardeen-s2zqf8`, and you can also run it by hand from the Actions tab. There's no build step, and all paths are relative.
 
 ## Demo ping
 
