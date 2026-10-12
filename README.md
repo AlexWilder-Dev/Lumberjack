@@ -63,6 +63,19 @@ Adding `#me` once marks your browser so the demo ping ignores your visits.
 
 GitHub Pages is set to deploy from **GitHub Actions**. `.github/workflows/pages.yml` publishes `index.html`, `css/`, `js/` and `images/` on every push to the repository's default branch, and you can also run it by hand from the Actions tab. There's no build step, and all paths are relative.
 
+## Link preview
+
+The `<head>` of `index.html` carries the full set of static preview tags, so WhatsApp, iMessage, Slack and email clients can build a card without running JavaScript. That covers the title, description, Open Graph tags (type, site name, title, description, url, image, size, alt) and Twitter card tags. Every URL in them is absolute (`https://alexwilder-dev.github.io/Lumberjack/…`), and so are the favicon and apple-touch-icon links.
+
+`og.jpg` (1200×630 JPEG, about 70 KB) shows their logo, the line from the hero and the shopfront drawing. To rebuild it:
+
+```sh
+npm install
+npm run og        # tools/make-og.mjs: renders the card, then encodes it with sharp
+```
+
+It needs a Chromium for Playwright (`npx playwright install chromium`). The script fails if the output isn't a 1200×630 JPEG under 300 KB. If photos of the shop are cleared later, the card can be remade from one of them.
+
 ## Demo ping
 
 The page posts "`<v> opened <path>`" to an ntfy topic once per browser session. Tag a link with `?v=name` to see who opened it. Replace `TOPIC` in `index.html` with your own topic before sharing.
@@ -73,7 +86,10 @@ The page posts "`<v> opened <path>`" to an ntfy topic once per browser session. 
 index.html     the page, with the illustrations inline as SVG
 css/styles.css styles (mobile first)
 js/main.js     opening status, menu, shelves, contact form
-images/        logo (traced), favicon, touch icon, link-preview image
+images/        logo (traced), favicons, touch icon
+og.jpg         link-preview image
+tools/         make-og.mjs, the one-off script that builds og.jpg
+package.json   dependencies for that script only (the site has no build step)
 ```
 
 Fonts: Montserrat (close to their wordmark) and Newsreader, from Google Fonts.

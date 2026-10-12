@@ -1,0 +1,15 @@
+{
+  "name": "lumberjack-site",
+  "private": true,
+  "description": "Static site. The only script builds the link-preview image (og.jpg).",
+  "type": "module",
+  "scripts": {
+    "og": "node tools/make-og.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/montserrat": "5.2.5",
+    "@fontsource/newsreader": "5.2.5",
+    "playwright": "1.56.1",
+    "sharp": "0.34.2"
+  }
+}
